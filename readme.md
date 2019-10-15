@@ -1,6 +1,6 @@
-#Headbanger das Feitiçarias
+# Headbanger das Feitiçarias
 
-This is the official website for the facebook page headbanger das feitiçarias. It's initial version, which is under development right now, includes a CRUD for reviews, with restrictions based on an user's role.
+This is the official website for the facebook page headbanger das feitiçarias. Its initial version, which is under development right now, includes a CRUD for reviews, with restrictions based on an user's role.
 
 ## Installation
 
