@@ -12,9 +12,16 @@ class ReviewController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
-        //
+        $reviews = Review::all();
+        return view('review.index',compact('reviews'));
     }
 
     /**
@@ -24,7 +31,8 @@ class ReviewController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', Review::class);
+        return view('review.create');
     }
 
     /**
