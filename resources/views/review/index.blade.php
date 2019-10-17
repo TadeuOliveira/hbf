@@ -6,6 +6,6 @@
     @foreach ($reviews as $review)
       <li>{{ $review }}</li>    
     @endforeach
-    
+    <button><a href="{{ route('review.create') }}">Create a review</a></button>
   </ul>
 @endsection

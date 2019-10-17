@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Review;
+use App\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
@@ -32,7 +34,8 @@ class ReviewController extends Controller
     public function create()
     {
         $this->authorize('create', Review::class);
-        return view('review.create');
+        $subjects = Subject::all();
+        return view('review.create',compact('subjects'));
     }
 
     /**
@@ -43,7 +46,11 @@ class ReviewController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //subject_id, user_id, title, text
+        $data = $this->validateRequest();
+        $data['user_id'] = Auth::id();
+        $review = Review::create($data);
+        return redirect('review');
     }
 
     /**
@@ -89,5 +96,14 @@ class ReviewController extends Controller
     public function destroy(Review $review)
     {
         //
+    }
+
+    public function validateRequest()
+    {
+        return request()->validate([
+            'title' => 'required|unique:reviews|max:50',
+            'text' => 'required',
+            'subject_id' => 'required'
+        ]);
     }
 }
