@@ -35,7 +35,8 @@ class ReviewController extends Controller
     {
         $this->authorize('create', Review::class);
         $subjects = Subject::all();
-        return view('review.create',compact('subjects'));
+        $review = new Review();
+        return view('review.create',compact('subjects','review'));
     }
 
     /**
@@ -47,7 +48,8 @@ class ReviewController extends Controller
     public function store(Request $request)
     {
         //subject_id, user_id, title, text
-        $data = $this->validateRequest();
+        $this->authorize('create', Review::class);
+        $data = $this->validateRequest('create');
         $data['user_id'] = Auth::id();
         $review = Review::create($data);
         return redirect('review');
@@ -61,7 +63,7 @@ class ReviewController extends Controller
      */
     public function show(Review $review)
     {
-        //
+        return view('review.show',compact('review'));
     }
 
     /**
@@ -72,7 +74,13 @@ class ReviewController extends Controller
      */
     public function edit(Review $review)
     {
-        //
+        //attempted to get polices to work here but had no success
+        //will have to put authentication logic here
+        if($review->author->id !== Auth::id()){
+          abort(403, 'Unauthorized action.');
+        }
+        $subjects = Subject::all();
+        return view('review.edit',compact('review','subjects'));
     }
 
     /**
@@ -83,8 +91,13 @@ class ReviewController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Review $review)
-    {
-        //
+    {      
+        if($review->author->id !== Auth::id()){
+          abort(403, 'Unauthorized action.');
+        }
+        $data = $this->validateRequest('update');
+        $review->update($data);
+        return redirect('review/'.$review->id);
     }
 
     /**
@@ -95,13 +108,15 @@ class ReviewController extends Controller
      */
     public function destroy(Review $review)
     {
-        //
+        //$this->authorize('delete',Auth::user(),$review);
+        $review->delete();
+        return redirect('review');
     }
 
-    public function validateRequest()
+    public function validateRequest($method)
     {
         return request()->validate([
-            'title' => 'required|unique:reviews|max:50',
+            'title' => 'required|max:50', //unique:reviews for creation
             'text' => 'required',
             'subject_id' => 'required'
         ]);
