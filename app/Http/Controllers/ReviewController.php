@@ -108,6 +108,9 @@ class ReviewController extends Controller
      */
     public function destroy(Review $review)
     {
+        if(Auth::id() !== $review->author->id){
+          abort(403, 'Unauthorized action.');
+        }
         //$this->authorize('delete',Auth::user(),$review);
         $review->delete();
         return redirect('review');
@@ -115,8 +118,10 @@ class ReviewController extends Controller
 
     public function validateRequest($method)
     {
+        $unique = $method === 'create' ? '|unique:reviews' : '';
+
         return request()->validate([
-            'title' => 'required|max:50', //unique:reviews for creation
+            'title' => 'required|max:50'.$unique,
             'text' => 'required',
             'subject_id' => 'required'
         ]);
